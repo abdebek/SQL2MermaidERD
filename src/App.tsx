@@ -1,9 +1,11 @@
 import React, { useState, useCallback } from 'react';
-import { Copy, Clipboard, ArrowRightLeft } from 'lucide-react';
+import { Copy, Clipboard, ArrowRightLeft, Check } from 'lucide-react';
 
 function App() {
   const [sqlInput, setSqlInput] = useState('');
   const [mermaidOutput, setMermaidOutput] = useState('');
+  const [copiedSQL, setCopiedSQL] = useState(false);
+  const [copiedMermaid, setCopiedMermaid] = useState(false);
 
   const convertToMermaid = useCallback(() => {
     const tables: Record<string, { fields: string[], relations: string[] }> = {};
@@ -68,9 +70,16 @@ function App() {
     setMermaidOutput(mermaid);
   }, [sqlInput]);
 
-  const copyToClipboard = async (text: string) => {
+  const copyToClipboard = async (text: string, type: 'sql' | 'mermaid') => {
     try {
       await navigator.clipboard.writeText(text);
+      if (type === 'sql') {
+        setCopiedSQL(true);
+        setTimeout(() => setCopiedSQL(false), 2000);
+      } else {
+        setCopiedMermaid(true);
+        setTimeout(() => setCopiedMermaid(false), 2000);
+      }
     } catch (err) {
       console.error('Failed to copy text:', err);
     }
@@ -90,11 +99,17 @@ function App() {
             <div className="flex justify-between items-center mb-4">
               <h2 className="text-xl font-semibold text-gray-800">SQL Input</h2>
               <button
-                onClick={() => copyToClipboard(sqlInput)}
-                className="text-gray-600 hover:text-gray-900 p-2 rounded-lg hover:bg-gray-100 transition-colors"
-                title="Copy SQL"
+                onClick={() => copyToClipboard(sqlInput, 'sql')}
+                className="text-gray-600 hover:text-gray-900 p-2 rounded-lg hover:bg-gray-100 transition-colors relative group"
+                title={copiedSQL ? 'Copied!' : 'Copy SQL'}
               >
-                <Copy size={20} />
+                <div className="transition-all duration-200 transform">
+                  {copiedSQL ? (
+                    <Check size={20} className="text-green-500" />
+                  ) : (
+                    <Copy size={20} className="group-hover:scale-110" />
+                  )}
+                </div>
               </button>
             </div>
             <textarea
@@ -110,11 +125,17 @@ function App() {
             <div className="flex justify-between items-center mb-4">
               <h2 className="text-xl font-semibold text-gray-800">Mermaid ERD</h2>
               <button
-                onClick={() => copyToClipboard(mermaidOutput)}
-                className="text-gray-600 hover:text-gray-900 p-2 rounded-lg hover:bg-gray-100 transition-colors"
-                title="Copy Mermaid"
+                onClick={() => copyToClipboard(mermaidOutput, 'mermaid')}
+                className="text-gray-600 hover:text-gray-900 p-2 rounded-lg hover:bg-gray-100 transition-colors relative group"
+                title={copiedMermaid ? 'Copied!' : 'Copy Mermaid'}
               >
-                <Copy size={20} />
+                <div className="transition-all duration-200 transform">
+                  {copiedMermaid ? (
+                    <Check size={20} className="text-green-500" />
+                  ) : (
+                    <Copy size={20} className="group-hover:scale-110" />
+                  )}
+                </div>
               </button>
             </div>
             <textarea
@@ -130,7 +151,7 @@ function App() {
         <div className="flex justify-center mt-6">
           <button
             onClick={convertToMermaid}
-            className="flex items-center gap-2 bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition-colors font-semibold"
+            className="flex items-center gap-2 bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition-colors font-semibold hover:scale-105 transform transition-transform duration-200"
           >
             <ArrowRightLeft size={20} />
             Convert to Mermaid
