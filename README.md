@@ -2,7 +2,7 @@
 
 A modern, user-friendly web application that converts SQL CREATE TABLE statements into Mermaid Entity-Relationship Diagrams (ERD). Built with React, TypeScript, and Tailwind CSS.
 
-![SQL to Mermaid ERD Converter](assets/header-image.png)
+![SQL to Mermaid ERD Converter](public/assets/header-image.png)
 
 ## Features
 
